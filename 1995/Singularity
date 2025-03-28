@@ -1,0 +1,36 @@
+Bootstrap: docker
+From: ubuntu:latest
+
+%labels
+    MAINTAINER icaoberg
+    EMAIL icaoberg@psc.edu
+    SUPPORT help@psc.edu
+    REPOSITORY http://gitub.com/pscedu/singularity-stride
+    COPYRIGHT Copyright © 2025 Pittsburgh Supercomputing Center. All Rights Reserved.
+    VERSION 1995
+
+%environment
+    export PATH="/opt/stride:${PATH}"
+
+%post
+    apt-get update && apt-get install -y --no-install-recommends \
+        wget \
+        tar \
+        make \
+        gcc \
+        libc6-dev \
+        && rm -rf /var/lib/apt/lists/*
+
+    # Create the stride directory
+    mkdir /opt/stride
+    cd /opt/stride
+
+    # Download and extract stride
+    wget --no-check-certificate -O stride.tar.gz https://webclu.bio.wzw.tum.de/stride/stride.tar.gz
+    tar -zxf stride.tar.gz
+
+    # Build stride
+    make
+
+%runscript
+    /opt/stride/stride "$@"
